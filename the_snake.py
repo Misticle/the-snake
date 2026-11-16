@@ -40,14 +40,76 @@ clock = pygame.time.Clock()
 
 
 # Тут опишите все классы игры.
-...
+class GameObject():
+    """Базовый класс для игровых объектов."""
+
+    def __init__(self, body_color=None):
+        self.position = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
+        self.body_color = body_color
+
+    def draw(self):
+        """Отрисовывает объект на игровом поле."""
+        pass
+
+
+# GameObject.body_color = BOARD_BACKGROUND_COLOR
+
+
+class Snake(GameObject):
+    """Дочерний класс питона."""
+    def __init__(self):
+        pass
+
+    def draw(self):
+        for position in self.positions[:-1]:
+            rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
+            pygame.draw.rect(screen, self.body_color, rect)
+            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
+
+class Apple(GameObject):
+    """Дочерний класс яблока."""
+    def __init__(self):
+        pass
+
+    def draw(self):
+        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(screen, self.body_color, rect)
+        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
 def main():
     # Инициализация PyGame:
     pygame.init()
     # Тут нужно создать экземпляры классов.
-    ...
+
+    """
+    class Square(GameObject):
+        def __init__(self, surface, color, x, y, side):
+            super().__init__(surface, color)
+            self.x = x
+            self.y = y
+            self.side = side
+
+        def draw(self):
+            pygame.draw.rect(self.surface, self.color,
+                             pygame.Rect(self.x, self.y, self.side, self.side))
+
+    pygame.draw.rect(surface, color, Rect, width)
+
+    screen = pygame.display.set_mode((640, 480))
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+    pygame.quit()
+
+
+"""
+
 
     # while True:
     #     clock.tick(SPEED)
@@ -58,20 +120,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-# Метод draw класса Apple
-# def draw(self):
-#     rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-#     pygame.draw.rect(screen, self.body_color, rect)
-#     pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
-
-# # Метод draw класса Snake
-# def draw(self):
-#     for position in self.positions[:-1]:
-#         rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
-#         pygame.draw.rect(screen, self.body_color, rect)
-#         pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 #     # Отрисовка головы змейки
 #     head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
