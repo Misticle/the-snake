@@ -40,14 +40,132 @@ clock = pygame.time.Clock()
 
 
 # Тут опишите все классы игры.
-...
+class GameObject:
+    """Базовый класс для игровых объектов."""
+
+    def __init__(self, body_color=None):
+        self.position = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
+        self.body_color = body_color
+
+    def draw(self):
+        """Отрисовывает объект на игровом поле."""
+        pass
+
+
+class Apple(GameObject):
+    """Дочерний класс яблока."""
+
+    def __init__(self, body_color=APPLE_COLOR):
+        super().__init__(body_color)
+        self.randomize_position()
+
+    def randomize_position(self, snake_position=None):
+        """Устанавливает случайное положение яблока на игровом поле."""
+        while True:
+            self.position = (
+                randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                randint(0, GRID_HEIGHT - 1) * GRID_SIZE
+            )
+            if snake_position is None or self.position not in snake_position:
+                break
+
+    def draw(self):
+        """Отрисовывает яблоко на игровой поверхности."""
+        rect = (pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE)))
+        pygame.draw.rect(screen, self.body_color, rect)
+        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
+
+class Snake(GameObject):
+    """Дочерний класс питона."""
+
+    def __init__(self, body_color=SNAKE_COLOR): # i saw the comment from reviewer. corrected!
+        super().__init__(body_color)
+        self.reset()
+
+    def get_head_position(self):
+        """Возвращает текущие координаты головного конца"""
+        return self.positions[0]
+
+    def move(self):
+        """Перемещает змейку на одну клетку в текущем направлении."""
+        head_x, head_y = self.get_head_position()
+        dx, dy = self.direction
+        next_x = (head_x + dx * GRID_SIZE) % SCREEN_WIDTH
+        next_y = (head_y + dy * GRID_SIZE) % SCREEN_HEIGHT
+        new_head = (next_x, next_y)
+        self.positions.insert(0, new_head)
+        if self.length < len(self.positions):
+            self.last = self.positions.pop()
+        else:
+            self.last = None
+
+    def reset(self):
+        """питон врезается сам в себя и сбрасывается"""
+        self.length = 1
+        self.positions = [
+            (
+                (SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)
+            )
+        ]
+        self.direction = RIGHT
+        self.next_direction = None
+        self.last = None
+
+    def update_direction(self):
+        """Обновляет направление движения змейки."""
+        if self.next_direction:
+            self.direction = self.next_direction
+            self.next_direction = None
+
+    def draw(self):
+        """Отрисовка головы змейки, тела и затирание хвостового сегмента"""
+        head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(screen, self.body_color, head_rect)
+        pygame.draw.rect(screen, BORDER_COLOR, head_rect, 1)
+        # Дорисовываем тело
+        for position in self.positions:
+            rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
+            pygame.draw.rect(screen, self.body_color, rect)
+            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+        # Затирание последнего сегмента PYGAME
+        if self.last:
+            last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
+            pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
 
 
 def main():
     # Инициализация PyGame:
     pygame.init()
     # Тут нужно создать экземпляры классов.
-    ...
+
+    """
+    class Square(GameObject):
+        def __init__(self, surface, color, x, y, side):
+            super().__init__(surface, color)
+            self.x = x
+            self.y = y
+            self.side = side
+
+        def draw(self):
+            pygame.draw.rect(self.surface, self.color,
+                             pygame.Rect(self.x, self.y, self.side, self.side))
+
+    pygame.draw.rect(surface, color, Rect, width)
+
+    screen = pygame.display.set_mode((640, 480))
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+    pygame.quit()
+
+
+"""
+
 
     # while True:
     #     clock.tick(SPEED)
@@ -59,29 +177,6 @@ def main():
 if __name__ == '__main__':
     main()
 
-
-# Метод draw класса Apple
-# def draw(self):
-#     rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-#     pygame.draw.rect(screen, self.body_color, rect)
-#     pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
-
-# # Метод draw класса Snake
-# def draw(self):
-#     for position in self.positions[:-1]:
-#         rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
-#         pygame.draw.rect(screen, self.body_color, rect)
-#         pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
-
-#     # Отрисовка головы змейки
-#     head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
-#     pygame.draw.rect(screen, self.body_color, head_rect)
-#     pygame.draw.rect(screen, BORDER_COLOR, head_rect, 1)
-
-#     # Затирание последнего сегмента
-#     if self.last:
-#         last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
-#         pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
 
 # Функция обработки действий пользователя
 # def handle_keys(game_object):
@@ -98,9 +193,3 @@ if __name__ == '__main__':
 #                 game_object.next_direction = LEFT
 #             elif event.key == pygame.K_RIGHT and game_object.direction != LEFT:
 #                 game_object.next_direction = RIGHT
-
-# Метод обновления направления после нажатия на кнопку
-# def update_direction(self):
-#     if self.next_direction:
-#         self.direction = self.next_direction
-#         self.next_direction = None
