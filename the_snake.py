@@ -79,7 +79,7 @@ class Apple(GameObject):
 class Snake(GameObject):
     """Дочерний класс питона."""
 
-    def __init__(self, body_color=SNAKE_COLOR):
+    def __init__(self, body_color=SNAKE_COLOR): # i saw the comment from reviewer. corrected!
         super().__init__(body_color)
         self.reset()
 
