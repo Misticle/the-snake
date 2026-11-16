@@ -40,7 +40,7 @@ clock = pygame.time.Clock()
 
 
 # Тут опишите все классы игры.
-class GameObject():
+class GameObject:
     """Базовый класс для игровых объектов."""
 
     def __init__(self, body_color=None):
@@ -52,30 +52,42 @@ class GameObject():
         pass
 
 
-# GameObject.body_color = BOARD_BACKGROUND_COLOR
+class Apple(GameObject):
+    """Дочерний класс яблока."""
+
+    def __init__(self, body_color=APPLE_COLOR):
+        super().__init__(body_color)
+        self.randomize_position()
+
+    def randomize_position(self, snake_position=None):
+        """Устанавливает случайное положение яблока на игровом поле."""
+        while True:
+            self.position = (
+                randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                randint(0, GRID_HEIGHT - 1) * GRID_SIZE
+            )
+            if snake_position is None or self.position not in snake_position:
+                break
+
+    def draw(self):
+        """Отрисовывает яблоко на игровой поверхности."""
+        rect = (pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE)))
+        pygame.draw.rect(screen, self.body_color, rect)
+        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
 class Snake(GameObject):
     """Дочерний класс питона."""
+
     def __init__(self):
         pass
 
-    def draw(self):
-        for position in self.positions[:-1]:
-            rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
-            pygame.draw.rect(screen, self.body_color, rect)
-            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
-
-
-class Apple(GameObject):
-    """Дочерний класс яблока."""
-    def __init__(self):
+    def randomize_position(self, snake_position=None):
         pass
 
+
     def draw(self):
-        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(screen, self.body_color, rect)
-        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+        pass
 
 
 def main():
