@@ -96,9 +96,7 @@ class Snake(GameObject):
         new_head = (next_x, next_y)
         self.positions.insert(0, new_head)
         if self.length < len(self.positions):
-            self.last = self.positions.pop()
-        else:
-            self.last = None
+            self.positions.pop()
 
     def reset(self):
         """питон врезается сам в себя и сбрасывается"""
@@ -110,7 +108,6 @@ class Snake(GameObject):
         ]
         self.direction = RIGHT
         self.next_direction = None
-        self.last = None
 
     def update_direction(self):
         """Обновляет направление движения змейки."""
@@ -120,18 +117,12 @@ class Snake(GameObject):
 
     def draw(self):
         """Отрисовка головы змейки, тела и затирание хвостового сегмента"""
-        # Рисуем
         for position in self.positions:
             rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
             pygame.draw.rect(screen, self.body_color, rect)
             pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
-        # Затирание последнего сегмента PYGAME
-        if self.last:
-            last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
 
 
-# Функция обработки действий пользователя
 def handle_keys(game_object):
     """функция снятия нажатий клавиатуры"""
     for event in pygame.event.get():
@@ -153,12 +144,13 @@ def main():
     """Основной цикл игры"""
     # Инициализация PyGame:
     pygame.init()
-    # Тут нужно создать экземпляры классов.
+    # Экземпляры классов.
     snake = Snake()
     apple = Apple()
 
     while True:
         clock.tick(SPEED)
+        screen.fill(BOARD_BACKGROUND_COLOR)
         handle_keys(snake)
         snake.update_direction()
         snake.move()
@@ -171,7 +163,6 @@ def main():
         # collision.
         elif snake.get_head_position() in snake.positions[2:]:
             snake.reset()
-            screen.fill(BOARD_BACKGROUND_COLOR)
 
         apple.draw()
         snake.draw()
